@@ -1,5 +1,4 @@
 import MenuPage from "@/components/template/MenuPage";
-import { revalidatePath } from "next/cache";
 
 function Menu({ data }) {
   return <MenuPage data={data} />;
@@ -13,6 +12,6 @@ export async function getStaticProps() {
 
   return {
     props: { data },
-    revalidate: 10, //seconds
+    revalidate: 60 * 60, //seconds
   };
 }
