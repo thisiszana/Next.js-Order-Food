@@ -1,12 +1,12 @@
-import DetailsPage from "@/components/template/DetailsPage";
-
 import { useRouter } from "next/router";
+
+import DetailsPage from "@/components/template/DetailsPage";
 
 function Details({ data }) {
   const router = useRouter();
 
   if (router.isFallback) {
-    <h3>Loading ...</h3>;
+    return <h3>Loading ...</h3>;
   }
 
   return <DetailsPage {...data} />;
@@ -20,7 +20,7 @@ export async function getStaticPaths() {
   const data = json.slice(0, 10);
 
   const paths = data.map((food) => ({
-    params: { id: food.id.toString() },
+    params: { detailsId: food.id.toString() },
   }));
 
   return {
@@ -30,24 +30,21 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  try {
-    const { params } = context;
+  const {
+    params: { detailsId },
+  } = context;
 
-    const res = await fetch(`${process.env.BASE_URL}/data/${params.id}`);
-    const data = await res.json();
+  const res = await fetch(`${process.env.BASE_URL}/data/${detailsId}`);
 
-    if (!data)
-      return {
-        notFound: true,
-      };
+  const data = await res.json();
 
-    return {
-      props: { data },
-      revalidate: +process.env.REVALIDATE, //second
-    };
-  } catch (error) {
+  if (!data.id)
     return {
       notFound: true,
     };
-  }
+
+  return {
+    props: { data },
+    revalidate: +process.env.REVALIDATE, //second
+  };
 }
